@@ -18,3 +18,8 @@ addopts = [
     "-ra",
     "--strict-markers",
 ]
+markers = [
+    "ui: marks tests that exercise the user interface",
+    "api: marks tests that exercise API endpoints",
+]
+base_url = "https://automationexercise.com"
