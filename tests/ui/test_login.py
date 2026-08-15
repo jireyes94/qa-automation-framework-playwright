@@ -1,41 +1,42 @@
 import pytest 
 from playwright.sync_api import Page, expect
 from test_data.user_factory import UserData
+from pages.components.header_component import HeaderComponent
+from pages.login_page import LoginPage
 
+#AUTH-002
 @pytest.mark.ui
-def test_user_cannot_login_with_invalid_credentials(page: Page) -> None:
-    page.goto("/login")
+def test_user_cannot_login_with_invalid_credentials(
+    page: Page,
+) -> None:
+    login_page = LoginPage(page)
 
-    email_input = page.locator("input[data-qa='login-email']") 
-    password_input = page.locator("input[data-qa='login-password']")
-    login_button = page.get_by_role("button", name="Login")
+    login_page.open()
+    login_page.login(
+        "invalid.user@example.com",
+        "invalid-password",
+    )
 
-    email_input.fill("invalid.user@example.com")
-    password_input.fill("invalid-password")
-    login_button.click()
-
-    error_message = page.get_by_text("Your email or password is incorrect!")
-
-    expect(error_message).to_have_text("Your email or password is incorrect!")
+    expect(login_page.error_message).to_have_text(
+        "Your email or password is incorrect!"
+    )
     expect(page).to_have_url("/login")
 
+#AUTH-001
 @pytest.mark.ui
 def test_user_can_login_with_valid_credentials(
     page: Page,
     registered_user: UserData,
 ) -> None:
-    page.goto("/login")
+    login_page = LoginPage(page)
+    header = HeaderComponent(page)
 
-    email_input = page.locator("input[data-qa='login-email']")
-    password_input = page.locator("input[data-qa='login-password']")
-    login_button = page.get_by_role("button", name="Login")
-
-    email_input.fill(registered_user.email)
-    password_input.fill(registered_user.password)
-    login_button.click()
-
-    logged_in_user = page.get_by_text(
-        f"Logged in as {registered_user.name}"
+    login_page.open()
+    login_page.login(
+        registered_user.email,
+        registered_user.password,
     )
 
-    expect(logged_in_user).to_be_visible()
+    expect(
+        header.logged_in_as(registered_user.name)
+    ).to_be_visible()
