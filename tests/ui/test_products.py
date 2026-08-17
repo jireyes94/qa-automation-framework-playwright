@@ -1,5 +1,6 @@
 import pytest
 from playwright.sync_api import Page, expect
+from pages import products_page
 from pages.products_page import ProductsPage
 
 #PROD-001
@@ -17,10 +18,14 @@ def test_product_catalog_displays_expected_product(
 
 # PROD-002
 @pytest.mark.ui
+@pytest.mark.parametrize(
+    "search_term",
+    ["blue", "BLUE"],
+)
 def test_product_search_returns_expected_results(
     page: Page,
+    search_term: str,
 ) -> None:
-    search_term = "Blue"
     products_page = ProductsPage(page)
 
     products_page.open()
@@ -71,6 +76,16 @@ def test_product_search_with_no_matches_returns_no_results(
     results = products_page.product_cards()
     assert not results, "Expected no products for an unmatched search"
 
+# PROD-005
+@pytest.mark.ui
+def test_empty_search_keeps_all_products_state(
+    page: Page,
+) -> None:
+    products_page = ProductsPage(page)
+    products_page.open()
+    products_page.search("")
+
+    expect(products_page.title).to_have_text("All Products")
 
 # CART-001
 @pytest.mark.ui
@@ -97,3 +112,89 @@ def test_add_product_to_cart_adds_product_to_cart(
 
     expect(cart_item.name).to_have_text(expected_name)
     expect(cart_item.price).to_have_text(expected_price)
+
+# CATEGORY-001
+@pytest.mark.ui
+def test_select_category_displays_expected_products(
+    page: Page,
+) -> None:
+    group = "Kids"
+    category = "Dress"
+
+    products_page = ProductsPage(page)
+
+    products_page.open()
+    products_page.category.select(group, category)
+
+    expect(products_page.title).to_have_text(
+        f"{group} - {category} Products"
+    )
+
+    results = products_page.product_cards()
+    assert results, "Expected at least one product in the selected category"
+
+# CATEGORY-002
+@pytest.mark.ui
+def test_category_result_matches_selected_category(
+    page: Page,
+) -> None:
+    group = "Kids"
+    category = "Dress"
+
+    products_page = ProductsPage(page)
+
+    products_page.open()
+    products_page.category.select(group, category)
+
+    results = products_page.product_cards()
+    assert results, "Expected category to return at least one product"
+
+    first_item = results[0]
+    product_details_page = first_item.view_details()
+
+    expect(product_details_page.category).to_have_text(
+        f"Category: {group} > {category}"
+    )
+
+# BRAND-001
+@pytest.mark.ui
+def test_select_brand_displays_expected_products(
+    page: Page,
+) -> None:
+    brand = "Polo"
+
+    products_page = ProductsPage(page)
+
+    products_page.open()
+    products_page.brand.select(brand)
+
+
+    expect(page).to_have_url(f"/brand_products/{brand}")
+    expect(products_page.title).to_have_text(
+        f"Brand - {brand} Products"
+    )
+
+    results = products_page.product_cards()
+    assert results, "Expected at least one product in the selected brand"
+
+# BRAND-002
+@pytest.mark.ui
+def test_brand_result_matches_selected_brand(
+    page: Page,
+) -> None:
+    brand = "Polo"
+
+    products_page = ProductsPage(page)
+
+    products_page.open()
+    products_page.brand.select(brand)
+
+    results = products_page.product_cards()
+    assert results, "Expected brand to return at least one product"
+
+    first_item = results[0]
+    product_details_page = first_item.view_details()
+
+    expect(product_details_page.brand).to_have_text(
+        f"Brand: {brand}"
+    )

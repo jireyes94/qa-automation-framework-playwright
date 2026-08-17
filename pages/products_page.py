@@ -1,10 +1,14 @@
 from playwright.sync_api import Locator, Page
 from pages.components.product_card import ProductCard
+from pages.components.category_component import CategoryComponent
+from pages.components.brand_component import BrandComponent
 
 
 class ProductsPage:
     def __init__(self, page: Page) -> None:
         self._page = page
+        self._category = CategoryComponent(page)
+        self._brand = BrandComponent(page)
 
     def open(self) -> None:
         self._page.goto("/products")
@@ -12,6 +16,14 @@ class ProductsPage:
     @property
     def title(self) -> Locator:
         return self._page.locator("h2.title")
+
+    @property
+    def category(self) -> CategoryComponent:
+        return self._category
+
+    @property
+    def brand(self) -> BrandComponent:
+        return self._brand
 
     def product_by_id(self, product_id: str) -> ProductCard:
         product_card_locator = self._page.locator(
