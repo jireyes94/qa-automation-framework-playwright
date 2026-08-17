@@ -13,5 +13,3 @@ class CartPage:
             f"tr:has(td.cart_description:has-text('{product_name}'))"
         )
         return CartItem(root)
-
-    

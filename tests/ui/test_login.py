@@ -1,4 +1,4 @@
-import pytest 
+import pytest
 from playwright.sync_api import Page, expect
 from test_data.user_factory import UserData
 from pages.components.header_component import HeaderComponent
