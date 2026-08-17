@@ -1,12 +1,8 @@
-from collections.abc import Iterator
-
 import pytest
-from playwright.sync_api import APIRequestContext, Playwright
-
+from collections.abc import Iterator
+from playwright.sync_api import APIRequestContext, Playwright, BrowserContext
 from api.users_client import UsersClient
-
 from test_data.user_factory import UserData, build_user
-
 
 @pytest.fixture
 def api_request_context(
@@ -52,3 +48,19 @@ def registered_user(
     assert delete_response.status == 200
     assert delete_body["responseCode"] == 200
     assert delete_body["message"] == "Account deleted!"
+
+@pytest.fixture(autouse=True)
+def block_third_party_ads(context: BrowserContext) -> None:
+    blocked_domains = (
+        "googleads.g.doubleclick.net",
+        "pagead2.googlesyndication.com",
+        "tpc.googlesyndication.com",
+    )
+
+    def handle_route(route) -> None:
+        if any(domain in route.request.url for domain in blocked_domains):
+            route.abort()
+        else:
+            route.continue_()
+
+    context.route("**/*", handle_route)

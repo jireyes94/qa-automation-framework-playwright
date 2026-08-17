@@ -39,3 +39,11 @@ class ProductsPage:
             self._page,
             product_card_locator,
         )
+
+    def product_cards(self) -> list[ProductCard]:
+        cards = self._page.locator(".product-image-wrapper")
+    
+        return [
+            ProductCard(self._page, cards.nth(index))
+            for index in range(cards.count())
+        ]

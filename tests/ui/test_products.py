@@ -1,4 +1,4 @@
-import pytest 
+import pytest
 from playwright.sync_api import Page, expect
 from pages.products_page import ProductsPage
 
@@ -20,17 +20,22 @@ def test_product_catalog_displays_expected_product(
 def test_product_search_returns_expected_results(
     page: Page,
 ) -> None:
-    product_name = "Blue Top"
+    search_term = "Blue"
     products_page = ProductsPage(page)
 
     products_page.open()
-    products_page.search(product_name)
+    products_page.search(search_term)
 
     expect(products_page.title).to_have_text("Searched Products")
 
-    product_card = products_page.product_by_name(product_name)
+    results = products_page.product_cards()
 
-    expect(product_card.name).to_have_text(product_name)
+    assert len(results) > 0, "Expected search to return at least one product"
+
+    for product in results:
+        product_name = product.name.inner_text()
+
+        assert search_term.lower() in product_name.lower()
 
 # PROD-003
 @pytest.mark.ui
@@ -49,6 +54,23 @@ def test_product_details_page_displays_expected_information(
 
     expect(product_details_page.name).to_have_text(expected_name)
     expect(product_details_page.price).to_have_text(expected_price)
+
+# PROD-004
+@pytest.mark.ui
+def test_product_search_with_no_matches_returns_no_results(
+    page: Page,
+) -> None:
+    search_term = "zzzzzzzz"
+    products_page = ProductsPage(page)
+    
+    products_page.open()
+    products_page.search(search_term)
+
+    expect(products_page.title).to_have_text("Searched Products")
+
+    results = products_page.product_cards()
+    assert not results, "Expected no products for an unmatched search"
+
 
 # CART-001
 @pytest.mark.ui
