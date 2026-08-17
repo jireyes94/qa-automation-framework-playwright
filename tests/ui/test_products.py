@@ -17,10 +17,14 @@ def test_product_catalog_displays_expected_product(
 
 # PROD-002
 @pytest.mark.ui
+@pytest.mark.parametrize(
+    "search_term",
+    ["blue", "BLUE"],
+)
 def test_product_search_returns_expected_results(
     page: Page,
+    search_term: str,
 ) -> None:
-    search_term = "Blue"
     products_page = ProductsPage(page)
 
     products_page.open()
@@ -71,6 +75,16 @@ def test_product_search_with_no_matches_returns_no_results(
     results = products_page.product_cards()
     assert not results, "Expected no products for an unmatched search"
 
+# PROD-005
+@pytest.mark.ui
+def test_empty_search_keeps_all_products_state(
+    page: Page,
+) -> None:
+    products_page = ProductsPage(page)
+    products_page.open()
+    products_page.search("")
+
+    expect(products_page.title).to_have_text("All Products")
 
 # CART-001
 @pytest.mark.ui
