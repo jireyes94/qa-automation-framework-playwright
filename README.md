@@ -441,5 +441,5 @@ The next phase focuses on structured reporting and automated engineering quality
 
 **José Ignacio Reyes Lima**
 
-[![GitHub](https://shields.io)](https://github.com/jireyes94)
-[![LinkedIn](https://shields.io)](https://www.linkedin.com/in/ignacio-reyes-lima/)
+- [Mi Perfil de GitHub](https://github.com/jireyes94)
+- [Mi Perfil de LinkedIn](https://www.linkedin.com/in/ignacio-reyes-lima/)
