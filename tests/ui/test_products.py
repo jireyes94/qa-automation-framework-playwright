@@ -1,9 +1,11 @@
 import pytest
 from playwright.sync_api import Page, expect
-from pages import products_page
 from pages.products_page import ProductsPage
+import allure
 
 #PROD-001
+@allure.feature("Product Catalog")
+@allure.story("Catalog")
 @pytest.mark.ui
 def test_product_catalog_displays_expected_product(
     page: Page,
@@ -17,6 +19,8 @@ def test_product_catalog_displays_expected_product(
     expect(product_card.name).to_have_text("Blue Top")
 
 # PROD-002
+@allure.feature("Product Catalog")
+@allure.story("Product Search")
 @pytest.mark.ui
 @pytest.mark.parametrize(
     "search_term",
@@ -43,6 +47,8 @@ def test_product_search_returns_expected_results(
         assert search_term.lower() in product_name.lower()
 
 # PROD-003
+@allure.feature("Product Catalog")
+@allure.story("Product Details")
 @pytest.mark.ui
 def test_product_details_page_displays_expected_information(
     page: Page,
@@ -61,6 +67,8 @@ def test_product_details_page_displays_expected_information(
     expect(product_details_page.price).to_have_text(expected_price)
 
 # PROD-004
+@allure.feature("Product Catalog")
+@allure.story("Product Search")
 @pytest.mark.ui
 def test_product_search_with_no_matches_returns_no_results(
     page: Page,
@@ -77,6 +85,8 @@ def test_product_search_with_no_matches_returns_no_results(
     assert not results, "Expected no products for an unmatched search"
 
 # PROD-005
+@allure.feature("Product Catalog")
+@allure.story("Product Search")
 @pytest.mark.ui
 def test_empty_search_keeps_all_products_state(
     page: Page,
@@ -88,6 +98,8 @@ def test_empty_search_keeps_all_products_state(
     expect(products_page.title).to_have_text("All Products")
 
 # CART-001
+@allure.feature("Shopping Cart")
+@allure.story("Add Product")
 @pytest.mark.ui
 def test_add_product_to_cart_adds_product_to_cart(
     page: Page,
@@ -114,6 +126,8 @@ def test_add_product_to_cart_adds_product_to_cart(
     expect(cart_item.price).to_have_text(expected_price)
 
 # CATEGORY-001
+@allure.feature("Product Catalog")
+@allure.story("Category Filtering")
 @pytest.mark.ui
 def test_select_category_displays_expected_products(
     page: Page,
@@ -134,6 +148,8 @@ def test_select_category_displays_expected_products(
     assert results, "Expected at least one product in the selected category"
 
 # CATEGORY-002
+@allure.feature("Product Catalog")
+@allure.story("Category Filtering")
 @pytest.mark.ui
 def test_category_result_matches_selected_category(
     page: Page,
@@ -157,6 +173,8 @@ def test_category_result_matches_selected_category(
     )
 
 # BRAND-001
+@allure.feature("Product Catalog")
+@allure.story("Brand Filtering")
 @pytest.mark.ui
 def test_select_brand_displays_expected_products(
     page: Page,
@@ -178,6 +196,8 @@ def test_select_brand_displays_expected_products(
     assert results, "Expected at least one product in the selected brand"
 
 # BRAND-002
+@allure.feature("Product Catalog")
+@allure.story("Brand Filtering")
 @pytest.mark.ui
 def test_brand_result_matches_selected_brand(
     page: Page,

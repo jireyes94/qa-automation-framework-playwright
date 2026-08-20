@@ -3,8 +3,11 @@ from playwright.sync_api import Page, expect
 from test_data.user_factory import UserData
 from pages.components.header_component import HeaderComponent
 from pages.login_page import LoginPage
+import allure
 
 #AUTH-002
+@allure.feature("Authentication")
+@allure.story("Login")
 @pytest.mark.ui
 def test_user_cannot_login_with_invalid_credentials(
     page: Page,
@@ -23,6 +26,8 @@ def test_user_cannot_login_with_invalid_credentials(
     expect(page).to_have_url("/login")
 
 #AUTH-001
+@allure.feature("Authentication")
+@allure.story("Login")
 @pytest.mark.ui
 def test_user_can_login_with_valid_credentials(
     page: Page,

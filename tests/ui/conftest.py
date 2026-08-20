@@ -2,6 +2,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+import allure
 from playwright.sync_api import BrowserContext, Page
 from pytest import FixtureRequest
 
@@ -28,15 +29,56 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
-    if report.when == "call":
-        item.test_failed = report.failed
+    if report.when != "call":
+        return
+
+    item.test_failed = report.failed
+
+    if not report.failed:
+        return
+
+    page = item.funcargs.get("page")
+    context = item.funcargs.get("context")
+
+    if page is None or context is None:
+        return
+
+    evidence_dir = Path("test-results")
+    evidence_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    screenshot_path = evidence_dir / f"{item.name}-screenshot.png"
+    trace_path = evidence_dir / f"{item.name}-trace.zip"
+
+    page.screenshot(
+        path=screenshot_path,
+    )
+
+    allure.attach.file(
+        source=screenshot_path,
+        name="Failure screenshot",
+        attachment_type=allure.attachment_type.PNG,
+    )
+
+    context.tracing.stop(
+        path=trace_path,
+    )
+
+    allure.attach.file(
+        source=trace_path,
+        name="Playwright trace",
+        attachment_type="application/zip",
+    )
+
+    item.trace_stopped = True
 
 
 @pytest.fixture(autouse=True)
 def capture_trace_on_failure(
     request: FixtureRequest,
     context: BrowserContext,
-    page: Page,
 ) -> Iterator[None]:
     context.tracing.start(
         screenshots=True,
@@ -46,28 +88,11 @@ def capture_trace_on_failure(
 
     yield
 
-    failed = getattr(
+    trace_stopped = getattr(
         request.node,
-        "test_failed",
+        "trace_stopped",
         False,
     )
 
-    if failed:
-        evidence_dir = Path("test-results")
-        trace_path = evidence_dir / f"{request.node.name}-trace.zip"
-        screenshot_path = evidence_dir / f"{request.node.name}-screenshot.png"
-
-        evidence_dir.mkdir(
-            parents=True,
-            exist_ok=True,
-        )
-
-        page.screenshot(
-            path=screenshot_path,
-        )
-
-        context.tracing.stop(
-            path=trace_path,
-        )
-    else:
+    if not trace_stopped:
         context.tracing.stop()

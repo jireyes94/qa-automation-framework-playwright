@@ -29,3 +29,7 @@ Thumbs.db
 
 # Local debug output
 pytest-output.txt
+
+# Allure reports
+allure-results/
+allure-report/
