@@ -1,7 +1,7 @@
 from playwright.sync_api import Locator, Page
 
-from pages.product_details_page import ProductDetailsPage
 from pages.components.cart_modal import CartModal
+from pages.product_details_page import ProductDetailsPage
 
 
 class ProductCard:
@@ -36,9 +36,9 @@ class ProductCard:
 
     def add_to_cart(self) -> CartModal:
         self._root.hover()
-    
+
         add_to_cart = self._overlay.locator(".add-to-cart")
-    
+
         add_to_cart.click()
-    
+
         return CartModal(self._page)

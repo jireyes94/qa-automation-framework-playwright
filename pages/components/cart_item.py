@@ -1,5 +1,6 @@
 from playwright.sync_api import Locator
 
+
 class CartItem:
     def __init__(self, root: Locator) -> None:
         self._root = root

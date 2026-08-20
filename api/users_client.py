@@ -6,9 +6,10 @@ class UsersClient:
         self._request_context = request_context
 
     def create_user(self, payload: dict[str, str]) -> APIResponse:
+        form: dict[str, str | float | bool] = dict(payload)
         return self._request_context.post(
-            "createAccount",
-            form=payload,
+            "/api/createAccount",
+            form=form,
         )
 
     def delete_user(self, email: str, password: str) -> APIResponse:

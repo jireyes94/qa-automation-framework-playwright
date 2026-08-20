@@ -1,8 +1,11 @@
-import pytest
 from collections.abc import Iterator
-from playwright.sync_api import APIRequestContext, Playwright, BrowserContext
+
+import pytest
+from playwright.sync_api import APIRequestContext, Playwright
+
 from api.users_client import UsersClient
 from test_data.user_factory import UserData, build_user
+
 
 @pytest.fixture
 def api_request_context(
@@ -16,11 +19,13 @@ def api_request_context(
 
     request_context.dispose()
 
+
 @pytest.fixture
 def users_client(
     api_request_context: APIRequestContext,
 ) -> UsersClient:
     return UsersClient(api_request_context)
+
 
 @pytest.fixture
 def registered_user(
@@ -28,9 +33,7 @@ def registered_user(
 ) -> Iterator[UserData]:
     user = build_user()
 
-    create_response = users_client.create_user(
-        user.to_payload()
-    )
+    create_response = users_client.create_user(user.to_payload())
     create_body = create_response.json()
 
     assert create_response.status == 200

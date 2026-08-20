@@ -1,7 +1,8 @@
 from playwright.sync_api import Locator, Page
-from pages.components.product_card import ProductCard
-from pages.components.category_component import CategoryComponent
+
 from pages.components.brand_component import BrandComponent
+from pages.components.category_component import CategoryComponent
+from pages.components.product_card import ProductCard
 
 
 class ProductsPage:
@@ -54,8 +55,7 @@ class ProductsPage:
 
     def product_cards(self) -> list[ProductCard]:
         cards = self._page.locator(".product-image-wrapper")
-    
+
         return [
-            ProductCard(self._page, cards.nth(index))
-            for index in range(cards.count())
+            ProductCard(self._page, cards.nth(index)) for index in range(cards.count())
         ]

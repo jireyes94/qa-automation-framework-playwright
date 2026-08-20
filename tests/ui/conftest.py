@@ -1,9 +1,9 @@
 from collections.abc import Iterator
 from pathlib import Path
 
-import pytest
 import allure
-from playwright.sync_api import BrowserContext, Page
+import pytest
+from playwright.sync_api import BrowserContext
 from pytest import FixtureRequest
 
 

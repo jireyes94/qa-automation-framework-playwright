@@ -5,12 +5,8 @@ class LoginPage:
     def __init__(self, page: Page) -> None:
         self._page = page
 
-        self.email_input: Locator = page.locator(
-            "input[data-qa='login-email']"
-        )
-        self.password_input: Locator = page.locator(
-            "input[data-qa='login-password']"
-        )
+        self.email_input: Locator = page.locator("input[data-qa='login-email']")
+        self.password_input: Locator = page.locator("input[data-qa='login-password']")
         self.login_button: Locator = page.get_by_role(
             "button",
             name="Login",

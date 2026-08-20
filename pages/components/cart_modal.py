@@ -1,5 +1,7 @@
 from playwright.sync_api import Locator, Page
+
 from pages.cart_page import CartPage
+
 
 class CartModal:
     def __init__(self, page: Page) -> None:

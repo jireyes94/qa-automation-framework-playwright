@@ -1,9 +1,11 @@
+import allure
 import pytest
 from playwright.sync_api import Page, expect
-from pages.products_page import ProductsPage
-import allure
 
-#PROD-001
+from pages.products_page import ProductsPage
+
+
+# PROD-001
 @allure.feature("Product Catalog")
 @allure.story("Catalog")
 @pytest.mark.ui
@@ -17,6 +19,7 @@ def test_product_catalog_displays_expected_product(
 
     expect(product_card.container).to_be_visible()
     expect(product_card.name).to_have_text("Blue Top")
+
 
 # PROD-002
 @allure.feature("Product Catalog")
@@ -46,6 +49,7 @@ def test_product_search_returns_expected_results(
 
         assert search_term.lower() in product_name.lower()
 
+
 # PROD-003
 @allure.feature("Product Catalog")
 @allure.story("Product Details")
@@ -66,6 +70,7 @@ def test_product_details_page_displays_expected_information(
     expect(product_details_page.name).to_have_text(expected_name)
     expect(product_details_page.price).to_have_text(expected_price)
 
+
 # PROD-004
 @allure.feature("Product Catalog")
 @allure.story("Product Search")
@@ -75,7 +80,7 @@ def test_product_search_with_no_matches_returns_no_results(
 ) -> None:
     search_term = "zzzzzzzz"
     products_page = ProductsPage(page)
-    
+
     products_page.open()
     products_page.search(search_term)
 
@@ -83,6 +88,7 @@ def test_product_search_with_no_matches_returns_no_results(
 
     results = products_page.product_cards()
     assert not results, "Expected no products for an unmatched search"
+
 
 # PROD-005
 @allure.feature("Product Catalog")
@@ -96,6 +102,7 @@ def test_empty_search_keeps_all_products_state(
     products_page.search("")
 
     expect(products_page.title).to_have_text("All Products")
+
 
 # CART-001
 @allure.feature("Shopping Cart")
@@ -115,15 +122,14 @@ def test_add_product_to_cart_adds_product_to_cart(
     cart_modal = product_card.add_to_cart()
 
     expect(cart_modal.title).to_have_text("Added!")
-    expect(cart_modal.message).to_have_text(
-        "Your product has been added to cart."
-    )
+    expect(cart_modal.message).to_have_text("Your product has been added to cart.")
 
     cart_page = cart_modal.view_cart()
     cart_item = cart_page.item_by_name(expected_name)
 
     expect(cart_item.name).to_have_text(expected_name)
     expect(cart_item.price).to_have_text(expected_price)
+
 
 # CATEGORY-001
 @allure.feature("Product Catalog")
@@ -140,12 +146,11 @@ def test_select_category_displays_expected_products(
     products_page.open()
     products_page.category.select(group, category)
 
-    expect(products_page.title).to_have_text(
-        f"{group} - {category} Products"
-    )
+    expect(products_page.title).to_have_text(f"{group} - {category} Products")
 
     results = products_page.product_cards()
     assert results, "Expected at least one product in the selected category"
+
 
 # CATEGORY-002
 @allure.feature("Product Catalog")
@@ -172,6 +177,7 @@ def test_category_result_matches_selected_category(
         f"Category: {group} > {category}"
     )
 
+
 # BRAND-001
 @allure.feature("Product Catalog")
 @allure.story("Brand Filtering")
@@ -186,14 +192,12 @@ def test_select_brand_displays_expected_products(
     products_page.open()
     products_page.brand.select(brand)
 
-
     expect(page).to_have_url(f"/brand_products/{brand}")
-    expect(products_page.title).to_have_text(
-        f"Brand - {brand} Products"
-    )
+    expect(products_page.title).to_have_text(f"Brand - {brand} Products")
 
     results = products_page.product_cards()
     assert results, "Expected at least one product in the selected brand"
+
 
 # BRAND-002
 @allure.feature("Product Catalog")
@@ -215,6 +219,4 @@ def test_brand_result_matches_selected_brand(
     first_item = results[0]
     product_details_page = first_item.view_details()
 
-    expect(product_details_page.brand).to_have_text(
-        f"Brand: {brand}"
-    )
+    expect(product_details_page.brand).to_have_text(f"Brand: {brand}")
