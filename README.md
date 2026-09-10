@@ -18,7 +18,7 @@ The framework currently includes:
 - Test-data generation through factories
 - API-driven UI preconditions and cleanup
 - Parametrized test scenarios
-- Cross-page data consistency validation
+- Cross-page and cross-layer API-to-UI data consistency validation
 - Third-party request isolation
 - Automatic screenshots and Playwright traces on UI failures
 - Allure reporting with structured feature and story metadata
@@ -97,6 +97,7 @@ For the reasoning behind these boundaries, see [`docs/architecture.md`](docs/arc
 - No-result search behavior
 - Empty-search behavior
 - Product detail consistency
+- API-to-UI product data consistency using API responses as a dynamic oracle
 
 ### Categories and brands
 
@@ -114,7 +115,15 @@ For the reasoning behind these boundaries, see [`docs/architecture.md`](docs/arc
 ### API
 
 - User creation through the public API
+- Duplicate-user rejection validation
+- User deletion and lifecycle validation
+- Product catalog contract and content validation
 - API clients reused for UI setup and cleanup
+- Cross-layer API-to-UI product consistency validation
+
+The API suite is intentionally focused on representative service behavior rather than endpoint-count growth.
+
+API responses are also used selectively as dynamic test oracles. Product data retrieved from the API is validated against the corresponding UI representation, avoiding unnecessary hardcoded expectations and exercising consistency across application layers.
 
 The suite intentionally favors representative, defensible scenarios over artificial test-count growth.
 
@@ -341,7 +350,13 @@ The UI scenarios use Automation Exercise, a public practice application created 
 
 The target is external to this repository and can change, become degraded or become unavailable independently of the framework.
 
-External instability is therefore diagnosed separately from framework defects. The framework does not automatically treat timeouts, HTTP failures or temporary service degradation as reasons to increase waits or introduce retries.
+External instability is therefore diagnosed separately from framework defects.
+
+Retries are not enabled by default. Functional assertion failures, incorrect application data, broken locators, navigation defects and reproducible regressions are treated as deterministic failures and must not be hidden by automatic re-execution.
+
+A retry may only be considered for clearly identified transient infrastructure or external-service failures, such as temporary network errors, HTTP 502/503/520 responses, service overload or equivalent availability failures.
+
+Any future retry mechanism must remain limited and observable so that repeated execution does not silently convert genuine product or automation defects into passing results.
 
 ## Engineering principles
 
@@ -392,9 +407,12 @@ Detailed engineering documentation is separated from the project overview:
 - [x] Add mypy static type checking
 - [x] Add automated code-quality CI gates
 - [x] Add Chromium, Firefox and WebKit browser matrix
+- [x] Expand selected API/UI integration scenarios
+- [x] Add cross-layer API-to-UI consistency validation
+- [x] Define formal retry criteria
 - [ ] Evaluate parallel test execution
-- [ ] Expand selected API/UI integration scenarios
-- [ ] Define formal retry criteria
+- [ ] Final framework cleanup and hardening
+- [ ] Complete v1.0 audit and release
 
 ## Author
 
