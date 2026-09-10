@@ -50,7 +50,6 @@ The framework currently includes:
 ├── .github/
 │   └── workflows/             # GitHub Actions CI workflows
 ├── api/                       # API clients and service-level helpers
-├── config/                    # Environment and framework configuration
 ├── docs/                      # Architecture and testing documentation
 ├── pages/
 │   ├── components/            # Reusable Component Objects
@@ -61,7 +60,6 @@ The framework currently includes:
 │   └── ui/
 │       ├── conftest.py        # UI-specific fixtures, hooks and evidence
 │       └── test_*.py          # UI scenarios
-├── utils/                     # Shared utilities
 ├── conftest.py                # Shared fixtures and API infrastructure
 └── pyproject.toml             # Dependencies and Pytest configuration
 ```
@@ -411,7 +409,7 @@ Detailed engineering documentation is separated from the project overview:
 - [x] Add cross-layer API-to-UI consistency validation
 - [x] Define formal retry criteria
 - [ ] Evaluate parallel test execution
-- [ ] Final framework cleanup and hardening
+- [x] Final framework cleanup and hardening
 - [ ] Complete v1.0 audit and release
 
 ## Author
