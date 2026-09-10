@@ -48,6 +48,3 @@ def test_get_all_products(products_client: ProductsClient) -> None:
     assert "category" in category
     assert "usertype" in category
     assert "usertype" in category["usertype"]
-
-
-# API-002
