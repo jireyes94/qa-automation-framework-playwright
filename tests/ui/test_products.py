@@ -2,6 +2,7 @@ import allure
 import pytest
 from playwright.sync_api import Page, expect
 
+from api.products_client import ProductsClient
 from pages.products_page import ProductsPage
 
 
@@ -102,6 +103,41 @@ def test_empty_search_keeps_all_products_state(
     products_page.search("")
 
     expect(products_page.title).to_have_text("All Products")
+
+
+# PROD-006
+@allure.feature("Product Catalog")
+@allure.story("API and UI consistency")
+@pytest.mark.ui
+def test_product_details_match_api_data(
+    page: Page,
+    products_client: ProductsClient,
+) -> None:
+    response = products_client.get_all_products()
+    body = response.json()
+
+    api_product = body["products"][0]
+
+    product_id = str(api_product["id"])
+    expected_name = api_product["name"]
+    expected_price = api_product["price"]
+    expected_brand = api_product["brand"]
+    expected_category = api_product["category"]["category"]
+    expected_usertype = api_product["category"]["usertype"]["usertype"]
+
+    products_page = ProductsPage(page)
+
+    products_page.open()
+    product_card = products_page.product_by_id(product_id)
+
+    product_details_page = product_card.view_details()
+
+    expect(product_details_page.name).to_have_text(expected_name)
+    expect(product_details_page.price).to_have_text(expected_price)
+    expect(product_details_page.brand).to_have_text(f"Brand: {expected_brand}")
+    expect(product_details_page.category).to_have_text(
+        f"Category: {expected_usertype} > {expected_category}"
+    )
 
 
 # CART-001

@@ -3,6 +3,7 @@ from collections.abc import Iterator
 import pytest
 from playwright.sync_api import APIRequestContext, Playwright
 
+from api.products_client import ProductsClient
 from api.users_client import UsersClient
 from test_data.user_factory import UserData, build_user
 
@@ -25,6 +26,11 @@ def users_client(
     api_request_context: APIRequestContext,
 ) -> UsersClient:
     return UsersClient(api_request_context)
+
+
+@pytest.fixture
+def products_client(api_request_context: APIRequestContext) -> ProductsClient:
+    return ProductsClient(api_request_context)
 
 
 @pytest.fixture
