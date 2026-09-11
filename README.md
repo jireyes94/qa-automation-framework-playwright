@@ -410,7 +410,7 @@ Detailed engineering documentation is separated from the project overview:
 - [x] Define formal retry criteria
 - [x] Evaluate parallel test execution
 - [x] Final framework cleanup and hardening
-- [ ] Complete v1.0 audit and release
+- [x] Complete v1.0 audit and release
 
 ## Author
 
