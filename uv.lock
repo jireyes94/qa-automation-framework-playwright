@@ -514,7 +514,7 @@ wheels = [
 
 [[package]]
 name = "qa-automation-framework-playwright"
-version = "0.1.0"
+version = "1.0.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
