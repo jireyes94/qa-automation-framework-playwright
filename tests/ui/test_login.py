@@ -7,7 +7,7 @@ from pages.login_page import LoginPage
 from test_data.user_factory import UserData
 
 
-# AUTH-002
+# AUTH-001
 @allure.feature("Authentication")
 @allure.story("Login")
 @pytest.mark.ui
@@ -28,7 +28,7 @@ def test_user_cannot_login_with_invalid_credentials(
     expect(page).to_have_url("/login")
 
 
-# AUTH-001
+# AUTH-002
 @allure.feature("Authentication")
 @allure.story("Login")
 @pytest.mark.ui
