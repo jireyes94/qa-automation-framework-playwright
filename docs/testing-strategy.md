@@ -21,6 +21,8 @@ These layers are not treated as isolated worlds.
 
 API operations can support UI scenarios when service-level setup is faster and more deterministic than reproducing the same precondition through the browser.
 
+API responses can also provide dynamic test oracles for cross-layer consistency checks when the service exposes stronger source data than the UI alone.
+
 ## UI testing
 
 UI tests validate behavior where browser interaction or rendered application state is relevant.
@@ -35,6 +37,7 @@ Current UI coverage includes:
 - Brand filtering
 - Shopping cart behavior
 - Cross-page consistency
+- Cross-layer API-to-UI consistency
 
 UI tests are intentionally not used for every possible validation.
 
@@ -44,7 +47,9 @@ When a behavior can be established more reliably below the UI, a service or data
 
 API tests validate service behavior directly and provide reusable infrastructure for higher-level scenarios.
 
-The current framework exercises user lifecycle operations and uses the same API abstraction to support UI preconditions and cleanup.
+The current framework exercises user creation, duplicate-user rejection, user deletion and product-catalog responses.
+
+The same API abstractions are reused to support UI preconditions, cleanup and selected cross-layer validation.
 
 This avoids duplicating communication logic between API tests and UI fixtures.
 
@@ -140,7 +145,7 @@ It does not navigate through every returned product solely to simulate exhaustiv
 
 If complete collection membership needed to be proven, a reliable API or data-layer oracle would be preferable.
 
-## Cross-page consistency
+## Cross-page and cross-layer consistency
 
 Some scenarios validate that data remains consistent while moving between application surfaces.
 
@@ -158,7 +163,25 @@ Cart
 same name + price
 ```
 
-This provides more meaningful validation than checking only whether a button was clickable or navigation occurred.
+The framework also validates consistency between API data and the corresponding UI representation.
+
+Conceptually:
+
+```text
+Products API
+    ↓
+select current product data
+    ↓
+locate the same product by ID in UI
+    ↓
+Product Details
+    ↓
+compare name, price, brand and category
+```
+
+The API response acts as a dynamic oracle rather than relying on a hardcoded product identity that may disappear from the external practice application.
+
+This is not an assertion that API ordering is stable. The selected product is simply a currently valid entity used to exercise consistency across layers.
 
 ## Third-party isolation
 
@@ -203,29 +226,47 @@ application defect
 
 Diagnosis is required.
 
-The framework deliberately avoids responding to temporary environmental instability by immediately increasing timeouts or adding retries.
+The framework deliberately avoids responding to temporary environmental instability by immediately increasing timeouts or adding broad retries.
 
-## Retry philosophy
+## Retry policy
 
-Retries can improve resilience when they address a known transient failure mode.
+Retries are disabled by default.
 
-They can also hide real instability.
+The framework does not automatically re-execute failures caused by:
 
-The current strategy is therefore conservative:
+- Functional assertion mismatches
+- Incorrect application data
+- Broken or outdated locators
+- Navigation defects
+- Reproducible application regressions
+- Contract mismatches in API responses
+
+A retry may only be considered after the failure has been classified as a known transient infrastructure or external-service condition.
+
+Examples include:
+
+- Temporary network interruption
+- HTTP 502, 503 or 520 responses
+- Known service-overload pages
+- Equivalent temporary origin or availability failures
+
+A timeout by itself is not sufficient evidence that a failure is transient because deterministic locator, navigation or application defects can also surface as timeouts.
+
+If automated retries are introduced later, they must remain limited and observable. A passing rerun must not erase the original failure signal or silently redefine an unstable scenario as healthy.
+
+The default sequence remains:
 
 ```text
 failure
+   ↓
+evidence
    ↓
 diagnose
    ↓
 classify
    ↓
-only then consider retry behavior
+retry only if a known transient condition justifies it
 ```
-
-A timeout alone is not sufficient justification for a retry.
-
-Formal retry criteria remain a future engineering decision.
 
 ## Failure observability
 
@@ -441,7 +482,7 @@ Allowing CI to silently repair submitted code would mean the pipeline was evalua
 
 ## Test identifiers
 
-Scenario comments use lightweight domain identifiers.
+Scenario comments use lightweight domain identifiers where they add traceability.
 
 Examples include:
 
@@ -468,9 +509,9 @@ Current boundaries include:
 
 Potential future work includes:
 
-1. Selected API/UI cross-layer scenarios where service data provides a stronger UI oracle
-2. Evaluation of parallel test execution
-3. Formal documented retry criteria
+1. Evaluation of parallel test execution when suite size justifies the added complexity
+2. Selective automated handling of classified transient failures if recurring evidence justifies it
+3. Additional cross-layer scenarios only where they provide a stronger oracle than isolated layer checks
 
 Each addition should be justified by a concrete testing or engineering need rather than by tool availability.
 
