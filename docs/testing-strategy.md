@@ -450,6 +450,26 @@ The code-quality job does not execute functional scenarios.
 
 This separation improves both execution clarity and failure diagnosis.
 
+## Parallel execution decision
+
+Parallel execution was evaluated for v1.0 but test-level parallelism was intentionally not introduced.
+
+The CI browser matrix already provides useful parallelism because Chromium, Firefox and WebKit execute as independent jobs. At the current suite size, adding worker-level parallelism inside each browser job would provide limited runtime benefit while introducing additional dependency, scheduling and isolation complexity.
+
+The target application is also an external public practice environment with observed overload, Cloudflare verification and origin-availability failures. Increasing concurrent requests against that environment could reduce signal quality by creating more environmental instability than execution-time benefit.
+
+The current decision is therefore:
+
+```text
+browser-level parallelism in CI
+→ adopted
+
+test-level parallelism inside each browser job
+→ evaluated, not adopted for v1.0
+```
+
+This is a scope decision rather than a tooling limitation. Test-level parallelism can be reconsidered when suite size, execution duration or ownership of the target environment makes the trade-off worthwhile.
+
 ## Code-quality gates
 
 Functional correctness is not the only property validated before integration.
@@ -502,6 +522,7 @@ The framework deliberately does not attempt to solve every testing problem.
 Current boundaries include:
 
 - No indiscriminate retry policy
+- No test-level parallelism when the current suite size does not justify it
 - No artificial expansion of UI test count
 - No exhaustive UI traversal when a better oracle would be required
 - No abstraction introduced solely to remove small amounts of duplication
@@ -509,7 +530,7 @@ Current boundaries include:
 
 Potential future work includes:
 
-1. Evaluation of parallel test execution when suite size justifies the added complexity
+1. Reconsider test-level parallelism when suite size or execution duration provides a concrete benefit
 2. Selective automated handling of classified transient failures if recurring evidence justifies it
 3. Additional cross-layer scenarios only where they provide a stronger oracle than isolated layer checks
 

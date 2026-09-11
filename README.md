@@ -408,7 +408,7 @@ Detailed engineering documentation is separated from the project overview:
 - [x] Expand selected API/UI integration scenarios
 - [x] Add cross-layer API-to-UI consistency validation
 - [x] Define formal retry criteria
-- [ ] Evaluate parallel test execution
+- [x] Evaluate parallel test execution
 - [x] Final framework cleanup and hardening
 - [ ] Complete v1.0 audit and release
 
